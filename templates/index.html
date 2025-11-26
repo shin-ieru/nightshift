@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Nightshift</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #020617;
+        color: #e5e7eb;
+      }
+      header {
+        padding: 16px 24px;
+        background: #0b1120;
+        border-bottom: 1px solid #1f2937;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 20px;
+      }
+      main {
+        padding: 20px 24px 32px;
+        max-width: 1150px;
+        margin: 0 auto;
+      }
+      h2 {
+        margin-top: 24px;
+        font-size: 14px;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .card {
+        background: #020617;
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-top: 8px;
+        border: 1px solid #1f2937;
+      }
+      .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+      input[type="file"],
+      input[type="text"],
+      select {
+        background: #020617;
+        border: 1px solid #4b5563;
+        color: #e5e7eb;
+        padding: 8px 10px;
+        border-radius: 8px;
+        font-size: 14px;
+        min-width: 160px;
+      }
+      input[type="text"]::placeholder {
+        color: #6b7280;
+      }
+      input[type="number"] {
+        background: #020617;
+        border: 1px solid #4b5563;
+        color: #e5e7eb;
+        padding: 6px 8px;
+        border-radius: 8px;
+        font-size: 13px;
+      }
+      button {
+        border: none;
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 14px;
+        cursor: pointer;
+        background: #2563eb;
+        color: white;
+      }
+      button:hover {
+        background: #1d4ed8;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 3fr) minmax(0, 4fr);
+        gap: 18px;
+        margin-top: 20px;
+      }
+      .video-wrapper {
+        background: #020617;
+        border-radius: 12px;
+        padding: 12px;
+        border: 1px solid #1f2937;
+      }
+      .video-stack {
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #000;
+      }
+      video {
+        width: 100%;
+        display: block;
+        position: relative;
+        z-index: 1;
+      }
+      .bbox-overlay {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        opacity: 0.85;
+        pointer-events: none;
+        display: none;
+        z-index: 2;
+      }
+      .video-caption {
+        font-size: 12px;
+        color: #9ca3af;
+        margin-top: 6px;
+      }
+      .timeline {
+        background: #020617;
+        border-radius: 12px;
+        border: 1px solid #1f2937;
+        padding: 12px;
+        max-height: 480px;
+        overflow-y: auto;
+      }
+      .timeline-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .timeline-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .timeline-item {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        background: #020617;
+        border-radius: 10px;
+        border: 1px solid #111827;
+        padding: 8px;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+      }
+      .timeline-item:hover {
+        background: #111827;
+        border-color: #1d4ed8;
+      }
+      .timeline-item.active {
+        border-color: #2563eb;
+        background: #0b1120;
+      }
+      .thumb {
+        width: 130px;
+        border-radius: 6px;
+        flex-shrink: 0;
+      }
+      .meta {
+        font-size: 13px;
+      }
+      .meta-time {
+        font-weight: 600;
+        color: #93c5fd;
+      }
+      .meta-label {
+        color: #e5e7eb;
+      }
+      .meta-score {
+        color: #9ca3af;
+      }
+      .empty-msg {
+        font-size: 13px;
+        color: #9ca3af;
+        margin-top: 4px;
+      }
+      code {
+        background: #020617;
+        padding: 2px 5px;
+        border-radius: 4px;
+        border: 1px solid #111827;
+        font-size: 12px;
+      }
+
+      /* --- SAM3 big, scrollable gallery --- */
+      .sam3-card {
+        background: #020617;
+        border-radius: 12px;
+        border: 1px solid #1f2937;
+        padding: 12px 14px;
+        margin-top: 24px;
+      }
+      .sam3-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 8px;
+        font-size: 13px;
+        color: #9ca3af;
+      }
+      .sam3-grid {
+        max-height: 380px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .sam3-item {
+        background: #020617;
+        border-radius: 10px;
+        border: 1px solid #111827;
+        padding: 8px;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .sam3-item:hover {
+        background: #111827;
+        border-color: #2563eb;
+      }
+      .sam3-item img {
+        width: 1040px;
+        height: 600px;
+        object-fit: cover;
+        border-radius: 6px;
+        display: block;
+      }
+      .sam3-caption-main {
+        font-size: 14px;
+        color: #e5e7eb;
+        margin-bottom: 2px;
+      }
+      .sam3-caption-sub {
+        font-size: 12px;
+        color: #9ca3af;
+      }
+
+      .sam3-chip {
+        display: inline-flex;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        cursor: pointer;
+        color: white;
+        opacity: 0.75;
+        transition: 0.15s;
+      }
+      .sam3-chip.active {
+        opacity: 1;
+        border: 2px solid white;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Nightshift</h1>
+      <span style="font-size: 13px; color: #9ca3af">
+        YOLO index · SAM3-ready backend
+      </span>
+    </header>
+
+    <main>
+      <!-- 1. Upload -->
+      <h2>1. Upload video</h2>
+      <div class="card">
+        <form
+          action="/upload"
+          method="post"
+          enctype="multipart/form-data"
+          class="form-row"
+        >
+          <input type="file" name="video" accept="video/*" required />
+          <button type="submit">Upload &amp; process</button>
+        </form>
+        <div class="empty-msg" style="margin-top: 6px">
+          Use a short MP4 first to keep processing fast.
+        </div>
+      </div>
+
+      <!-- 2. YOLO search -->
+      <h2>2. Search detections</h2>
+      <div class="card">
+        <form action="/" method="get" class="form-row">
+          <input
+            type="text"
+            name="label"
+            placeholder="Try: person, car, truck, motorcycle"
+            value="{{ label or '' }}"
+          />
+          <span style="font-size: 12px; color: #9ca3af">Min confidence</span>
+          <input
+            type="number"
+            name="min_conf"
+            step="0.05"
+            min="0"
+            max="1"
+            value="{{ '%.2f'|format(min_conf if min_conf is not none else 0.30) }}"
+            style="max-width: 80px"
+          />
+          <button type="submit">Apply filters</button>
+        </form>
+
+        <div class="empty-msg" style="margin-top: 8px">
+          {% if label %} Label: <strong>{{ label }}</strong> · {% endif %} Min
+          conf:
+          <strong
+            >{{ '%.2f'|format(min_conf if min_conf is not none else 0.30) }}</strong
+          >
+        </div>
+      </div>
+
+      <!-- 3. SMART SEARCH controls -->
+      <div style="margin-top: 40px">
+        <h2>3. SMART SEARCH (SAM3 Natural Language)</h2>
+
+        <div class="form-row">
+          <label>Description:</label>
+          <input
+            id="smart_query"
+            type="text"
+            style="width: 260px"
+            placeholder="e.g. yellow car; bus; truck"
+          />
+
+          <label>Video:</label>
+          <select id="smart_video">
+            {% if video_paths %}
+              {% for v in video_paths %}
+                <option
+                  value="{{ v }}"
+                  {% if current_video and v == current_video %}selected{% endif %}
+                >
+                  {{ v.rsplit('/', 1)[-1] }}
+                </option>
+              {% endfor %}
+            {% else %}
+              <option value="">(no videos indexed yet)</option>
+            {% endif %}
+          </select>
+
+          <label>Frames to scan:</label>
+          <input
+            id="smart_frames"
+            type="number"
+            value="5"
+            min="1"
+            max="200"
+            style="width: 80px"
+          />
+          <label>Min confidence:</label>
+          <input
+            id="smart_conf"
+            type="number"
+            step="0.05"
+            value="0.3"
+            style="width: 80px"
+          />
+
+          <button onclick="runSmartSearch()" style="margin-left: 10px">
+            Smart Search
+          </button>
+        </div>
+      </div>
+
+      <!-- Video + YOLO timeline layout -->
+      <div class="layout">
+        <!-- Video viewer -->
+        <div class="video-wrapper">
+          <h3 style="margin: 0 0 8px; font-size: 14px; color: #9ca3af">
+            Video viewer
+          </h3>
+          {% if video_src %}
+          <div class="video-stack">
+            <video id="player" controls src="{{ video_src }}"></video>
+            <img
+              id="bboxOverlay"
+              class="bbox-overlay"
+              alt="Annotated overlay"
+            />
+          </div>
+          <div class="video-caption">
+            Click any detection on the right to seek the video and show its YOLO
+            bounding boxes overlaid here.
+          </div>
+          {% else %}
+          <div class="empty-msg">
+            Upload and index a video, then run a search to see it here.
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- YOLO timeline -->
+        <div class="timeline">
+          <div class="timeline-header">
+            <span style="font-size: 13px; color: #9ca3af">
+              Timeline of detections (YOLO)
+            </span>
+            <span style="font-size: 12px; color: #6b7280">
+              {% if label %}label=<code>{{ label }}</code> · {% endif %}
+              min_conf={{ '%.2f'|format(min_conf if min_conf is not none else
+              0.30) }} {% if results %} · {{ results|length }} hits{% endif %}
+            </span>
+          </div>
+
+          {% if results %}
+          <ul class="timeline-list">
+            {% for r in results %}
+            <li
+              class="timeline-item"
+              data-time="{{ r.timestamp }}"
+              data-frame-id="{{ r.id }}"
+            >
+              <img
+                class="thumb"
+                src="{{ url_for('annotated_frame', frame_id=r.id) }}"
+                alt="frame {{ r.id }}"
+              />
+              <div class="meta">
+                <div class="meta-time">
+                  t = {{ "%.2f"|format(r.timestamp) }}s
+                </div>
+                <div class="meta-label">{{ r.label }}</div>
+                <div class="meta-score">
+                  conf = {{ "%.2f"|format(r.score) }}
+                </div>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <div class="empty-msg">
+            No detections yet. After uploading, try searching for
+            <code>person</code>.
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- SAM3 big gallery (separate from video) -->
+      <div class="sam3-card">
+        <div class="sam3-header">
+          <span>SAM3 images for current query</span>
+          <span id="smart_status" style="font-size: 12px; color: #6b7280">
+            Not run yet.
+          </span>
+        </div>
+
+        <div
+          id="sam3-prompt-filters"
+          style="display: flex; gap: 8px; margin-bottom: 10px"
+        ></div>
+
+        <div id="sam3-gallery" class="sam3-grid"></div>
+
+        <div style="margin-top: 8px; display: flex; gap: 8px">
+          <button id="sam3-report-btn" type="button">
+            Download PDF report
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- YOLO timeline behaviour -->
+    <script>
+      const video = document.getElementById("player");
+      const overlay = document.getElementById("bboxOverlay");
+      const items = document.querySelectorAll(".timeline-item");
+
+      function clearActive() {
+        items.forEach((i) => i.classList.remove("active"));
+      }
+
+      function seekToTimestamp(sec) {
+        if (!video) return;
+        video.currentTime = sec;
+        video.pause();
+        window.scrollTo({ top: video.offsetTop - 20, behavior: "smooth" });
+      }
+
+      items.forEach((item) => {
+        item.addEventListener("click", () => {
+          const t = parseFloat(item.dataset.time || "0");
+          const frameId = item.dataset.frameId;
+
+          clearActive();
+          item.classList.add("active");
+
+          if (video && !isNaN(t)) {
+            video.currentTime = t;
+            video.pause();
+          }
+
+          if (overlay && frameId) {
+            overlay.src = `/annotated/${frameId}`;
+            overlay.style.display = "block";
+          }
+
+          if (video) {
+            window.scrollTo({ top: video.offsetTop - 20, behavior: "smooth" });
+          }
+        });
+      });
+
+      if (video && overlay) {
+        video.addEventListener("play", () => {
+          overlay.style.display = "none";
+        });
+      }
+    </script>
+
+    <!-- SAM3 smart search + gallery + filters + PDF download -->
+    <script>
+      let sam3CurrentQuery = "";
+      const sam3Colors = [
+        "#ff00ff",
+        "#00ffff",
+        "#ff8800",
+        "#00ff00",
+        "#0055ff",
+        "#ffff00",
+      ];
+      let lastSAM3Results = [];
+
+      function renderPromptFilters(prompts) {
+        const container = document.getElementById("sam3-prompt-filters");
+        container.innerHTML = "";
+        if (!prompts || !prompts.length) return;
+
+        prompts.forEach((p, i) => {
+          const chip = document.createElement("div");
+          chip.className = "sam3-chip active";
+          chip.dataset.prompt = p;
+          chip.style.background = sam3Colors[i % sam3Colors.length];
+          chip.textContent = p;
+
+          chip.onclick = () => {
+            chip.classList.toggle("active");
+            renderSAM3Gallery(lastSAM3Results);
+          };
+
+          container.appendChild(chip);
+        });
+      }
+
+      async function runSmartSearch() {
+        const statusEl = document.getElementById("smart_status");
+        const gallery = document.getElementById("sam3-gallery");
+        const reportBtn = document.getElementById("sam3-report-btn");
+
+        const query =
+          document.getElementById("smart_query").value.trim() || "car";
+        const max_frames = parseInt(
+          document.getElementById("smart_frames").value || "5"
+        );
+        const min_score = parseFloat(
+          document.getElementById("smart_conf").value || "0.3"
+        );
+        const videoPath =
+          document.getElementById("smart_video").value || null;
+
+        sam3CurrentQuery = query;
+        statusEl.textContent = "Running SAM3 search...";
+        gallery.innerHTML = "";
+        lastSAM3Results = [];
+
+        try {
+          const resp = await fetch("/smart-search", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              query,
+              max_frames,
+              min_score,
+              video: videoPath,
+            }),
+          });
+
+          const data = await resp.json();
+          statusEl.textContent = `Done · ${
+            data.video ? data.video.split("/").slice(-1)[0] + " · " : ""
+          }scanned ${data.scanned_frames} frames · ${data.num_hits} hits`;
+
+          lastSAM3Results = data.results || [];
+
+          renderPromptFilters(data.prompts || []);
+          renderSAM3Gallery(lastSAM3Results);
+
+          // Wire PDF download
+          reportBtn.onclick = () => {
+            const vpath =
+              data.video ||
+              videoPath ||
+              (data.results && data.results.length
+                ? data.results[0].video_path
+                : null);
+            if (!vpath) return;
+
+            const url =
+              `/sam3-report-pdf?query=${encodeURIComponent(query)}` +
+              `&video=${encodeURIComponent(vpath)}` +
+              `&min_score=${encodeURIComponent(min_score)}`;
+            // direct navigation → browser downloads PDF
+            window.location = url;
+          };
+        } catch (err) {
+          console.error("Smart search error:", err);
+          statusEl.textContent = "Error running SAM3 search (see console)";
+        }
+      }
+
+      function renderSAM3Gallery(results) {
+        const gallery = document.getElementById("sam3-gallery");
+        gallery.innerHTML = "";
+
+        if (!results || !results.length) {
+          gallery.innerHTML =
+            '<div style="font-size:13px; color:#9ca3af;">No SAM3 hits for this query.</div>';
+          return;
+        }
+
+        const chips = [
+          ...document.querySelectorAll(".sam3-chip.active"),
+        ];
+        const activePrompts = chips.map((c) => c.dataset.prompt);
+
+        const filtered =
+          activePrompts.length > 0
+            ? results.filter((r) => activePrompts.includes(r.prompt))
+            : results;
+
+        if (!filtered.length) {
+          gallery.innerHTML =
+            '<div style="font-size:13px; color:#9ca3af;">No matches for active filters.</div>';
+          return;
+        }
+
+        filtered.forEach((r) => {
+          const item = document.createElement("div");
+          item.className = "sam3-item";
+
+          const annotatedUrl =
+            `/annotated_sam3/${r.frame_id}` +
+            `?query=${encodeURIComponent(sam3CurrentQuery)}` +
+            `&min_score=${encodeURIComponent(r.score.toFixed(2))}`;
+
+          const promptLabel = r.prompt || sam3CurrentQuery;
+
+          item.innerHTML = `
+            <img src="${annotatedUrl}" alt="SAM3 frame ${r.frame_id}">
+            <div>
+              <div class="sam3-caption-main">
+                t = ${r.timestamp.toFixed(2)}s · score = ${r.score.toFixed(2)}
+              </div>
+              <div class="sam3-caption-sub">(SAM3 · ${promptLabel})</div>
+            </div>
+          `;
+
+          item.onclick = () => {
+            seekToTimestamp(r.timestamp);
+          };
+
+          gallery.appendChild(item);
+        });
+      }
+    </script>
+  </body>
+</html>
