@@ -4,18 +4,37 @@
     <meta charset="UTF-8" />
     <title>Nightshift</title>
     <style>
+      :root {
+        --accent: #e75300;
+        --accent-soft: #f97316;
+        --bg-main: #0c0f14;
+        --bg-elevated: #1f2228;
+        --bg-soft: #151820;
+        --border-subtle: #262a32;
+        --border-strong: #374151;
+        --text-main: #f9fafb;
+        --text-muted: #9ca3af;
+        --text-soft: #6b7280;
+        --chip-bg: #272a32;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
           sans-serif;
         margin: 0;
         padding: 0;
-        background: #020617;
-        color: #e5e7eb;
+        background: radial-gradient(circle at top, #141824 0, var(--bg-main) 50%);
+        color: var(--text-main);
       }
+
       header {
         padding: 16px 24px;
-        background: #0b1120;
-        border-bottom: 1px solid #1f2937;
+        background: linear-gradient(90deg, #111827, #020617);
+        border-bottom: 1px solid var(--border-subtle);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -23,38 +42,63 @@
       header h1 {
         margin: 0;
         font-size: 20px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
       }
+      header h1 span {
+        color: var(--accent-soft);
+      }
+      header small {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+
       main {
         padding: 20px 24px 32px;
-        max-width: 1150px;
+        max-width: 1180px;
         margin: 0 auto;
       }
+
       h2 {
         margin-top: 24px;
-        font-size: 14px;
-        color: #9ca3af;
+        font-size: 13px;
+        color: var(--text-muted);
         text-transform: uppercase;
-        letter-spacing: 0.08em;
+        letter-spacing: 0.12em;
       }
+
       .card {
-        background: #020617;
-        border-radius: 12px;
+        background: var(--bg-elevated);
+        border-radius: 14px;
         padding: 14px 18px;
         margin-top: 8px;
-        border: 1px solid #1f2937;
+        border: 1px solid var(--border-subtle);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
       }
+
+      .card--sub {
+        background: var(--bg-soft);
+        border-color: #10121a;
+      }
+
       .form-row {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
         align-items: center;
       }
+
+      label {
+        font-size: 12px;
+        color: var(--text-soft);
+      }
+
       input[type="file"],
       input[type="text"],
       select {
-        background: #020617;
-        border: 1px solid #4b5563;
-        color: #e5e7eb;
+        background: #0f1117;
+        border: 1px solid var(--border-strong);
+        color: var(--text-main);
         padding: 8px 10px;
         border-radius: 8px;
         font-size: 14px;
@@ -64,40 +108,67 @@
         color: #6b7280;
       }
       input[type="number"] {
-        background: #020617;
-        border: 1px solid #4b5563;
-        color: #e5e7eb;
+        background: #0f1117;
+        border: 1px solid var(--border-strong);
+        color: var(--text-main);
         padding: 6px 8px;
         border-radius: 8px;
         font-size: 13px;
       }
+
       button {
         border: none;
-        padding: 8px 14px;
+        padding: 8px 16px;
         border-radius: 999px;
         font-size: 14px;
         cursor: pointer;
-        background: #2563eb;
+        background: var(--accent);
         color: white;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 500;
+        box-shadow: 0 10px 25px rgba(231, 83, 0, 0.35);
+        border: 1px solid rgba(0, 0, 0, 0.4);
       }
       button:hover {
-        background: #1d4ed8;
+        background: #c34400;
       }
+      button:disabled {
+        opacity: 0.6;
+        cursor: default;
+        box-shadow: none;
+      }
+
       .layout {
         display: grid;
-        grid-template-columns: minmax(0, 3fr) minmax(0, 4fr);
+        grid-template-columns: minmax(0, 3.2fr) minmax(0, 3.5fr);
         gap: 18px;
         margin-top: 20px;
       }
+
       .video-wrapper {
-        background: #020617;
-        border-radius: 12px;
+        background: var(--bg-elevated);
+        border-radius: 14px;
         padding: 12px;
-        border: 1px solid #1f2937;
+        border: 1px solid var(--border-subtle);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
       }
+
+      .video-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 8px;
+      }
+      .video-header span {
+        font-size: 12px;
+        color: var(--text-soft);
+      }
+
       .video-stack {
         position: relative;
-        border-radius: 10px;
+        border-radius: 12px;
         overflow: hidden;
         background: #000;
       }
@@ -113,23 +184,25 @@
         width: 100%;
         height: 100%;
         object-fit: contain;
-        opacity: 0.85;
+        opacity: 0.88;
         pointer-events: none;
         display: none;
         z-index: 2;
       }
       .video-caption {
         font-size: 12px;
-        color: #9ca3af;
+        color: var(--text-soft);
         margin-top: 6px;
       }
+
       .timeline {
-        background: #020617;
-        border-radius: 12px;
-        border: 1px solid #1f2937;
+        background: var(--bg-elevated);
+        border-radius: 14px;
+        border: 1px solid var(--border-subtle);
         padding: 12px;
-        max-height: 480px;
+        max-height: 500px;
         overflow-y: auto;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
       }
       .timeline-header {
         display: flex;
@@ -137,6 +210,15 @@
         align-items: center;
         margin-bottom: 8px;
       }
+      .timeline-header span:first-child {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+      .timeline-header span:last-child {
+        font-size: 12px;
+        color: var(--text-soft);
+      }
+
       .timeline-list {
         list-style: none;
         padding: 0;
@@ -149,23 +231,25 @@
         display: flex;
         gap: 10px;
         align-items: flex-start;
-        background: #020617;
+        background: var(--bg-soft);
         border-radius: 10px;
         border: 1px solid #111827;
         padding: 8px;
         cursor: pointer;
-        transition: background 0.15s, border-color 0.15s;
+        transition: background 0.15s, border-color 0.15s, transform 0.12s;
       }
       .timeline-item:hover {
-        background: #111827;
-        border-color: #1d4ed8;
+        background: #181b23;
+        border-color: var(--accent-soft);
+        transform: translateY(-1px);
       }
       .timeline-item.active {
-        border-color: #2563eb;
-        background: #0b1120;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px rgba(231, 83, 0, 0.4);
       }
+
       .thumb {
-        width: 130px;
+        width: 115px;
         border-radius: 6px;
         flex-shrink: 0;
       }
@@ -174,34 +258,37 @@
       }
       .meta-time {
         font-weight: 600;
-        color: #93c5fd;
+        color: #fde68a;
       }
       .meta-label {
-        color: #e5e7eb;
+        color: var(--text-main);
       }
       .meta-score {
-        color: #9ca3af;
+        color: var(--text-soft);
       }
+
       .empty-msg {
         font-size: 13px;
-        color: #9ca3af;
+        color: var(--text-soft);
         margin-top: 4px;
       }
+
       code {
-        background: #020617;
+        background: #0f1117;
         padding: 2px 5px;
         border-radius: 4px;
-        border: 1px solid #111827;
+        border: 1px solid #020617;
         font-size: 12px;
       }
 
-      /* --- SAM3 big, scrollable gallery --- */
+      /* SAM3 big, scrollable gallery */
       .sam3-card {
-        background: #020617;
-        border-radius: 12px;
-        border: 1px solid #1f2937;
-        padding: 12px 14px;
-        margin-top: 24px;
+        background: var(--bg-elevated);
+        border-radius: 14px;
+        border: 1px solid var(--border-subtle);
+        padding: 12px 16px 16px;
+        margin-top: 28px;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
       }
       .sam3-header {
         display: flex;
@@ -209,69 +296,153 @@
         align-items: baseline;
         margin-bottom: 8px;
         font-size: 13px;
-        color: #9ca3af;
+        color: var(--text-muted);
       }
       .sam3-grid {
-        max-height: 380px;
+        max-height: 360px;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
         gap: 12px;
       }
       .sam3-item {
-        background: #020617;
-        border-radius: 10px;
-        border: 1px solid #111827;
+        background: var(--bg-soft);
+        border-radius: 12px;
+        border: 1px solid #0f172a;
         padding: 8px;
         cursor: pointer;
-        transition: background 0.15s, border-color 0.15s;
+        transition: background 0.15s, border-color 0.15s, transform 0.12s,
+          box-shadow 0.12s;
         display: flex;
         gap: 10px;
         align-items: flex-start;
       }
       .sam3-item:hover {
-        background: #111827;
-        border-color: #2563eb;
+        background: #181b23;
+        border-color: var(--accent-soft);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+        transform: translateY(-1px);
       }
+      /* slightly smaller SAM3 images */
       .sam3-item img {
-        width: 1040px;
-        height: 600px;
+        width: 860px;
+        height: 480px;
         object-fit: cover;
-        border-radius: 6px;
+        border-radius: 8px;
         display: block;
       }
       .sam3-caption-main {
         font-size: 14px;
-        color: #e5e7eb;
+        color: var(--text-main);
         margin-bottom: 2px;
       }
       .sam3-caption-sub {
         font-size: 12px;
-        color: #9ca3af;
+        color: var(--text-soft);
       }
 
+      /* prompt filter chips */
       .sam3-chip {
         display: inline-flex;
-        padding: 4px 10px;
+        padding: 4px 11px;
         border-radius: 999px;
         font-size: 12px;
         cursor: pointer;
         color: white;
-        opacity: 0.75;
+        opacity: 0.78;
         transition: 0.15s;
+        background: var(--chip-bg);
+        border: 1px solid transparent;
       }
       .sam3-chip.active {
         opacity: 1;
-        border: 2px solid white;
+        border-color: white;
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3);
+      }
+
+      .footer-hint {
+        margin-top: 4px;
+        font-size: 11px;
+        color: var(--text-soft);
+      }
+
+      /* Lightbox overlay for SAM3 fullscreen view */
+      .lightbox {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+      }
+      .lightbox.show {
+        display: flex;
+      }
+      .lightbox-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+      }
+      .lightbox-content {
+        position: relative;
+        max-width: 90%;
+        max-height: 90%;
+        background: #020617;
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7);
+        display: flex;
+        flex-direction: column;
+      }
+      #lightbox-img {
+        max-width: 100%;
+        max-height: 70vh;
+        border-radius: 10px;
+        object-fit: contain;
+      }
+      .lightbox-caption {
+        margin-top: 8px;
+        font-size: 13px;
+        color: #e5e7eb;
+      }
+      .lightbox-caption span {
+        font-size: 12px;
+        color: var(--text-soft);
+      }
+      .lightbox-close {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: #111827;
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 12px;
+      }
+      .lightbox-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(15, 23, 42, 0.9);
+        border-radius: 999px;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+      }
+      .lightbox-prev {
+        left: 8px;
+      }
+      .lightbox-next {
+        right: 8px;
       }
     </style>
   </head>
   <body>
     <header>
-      <h1>Nightshift</h1>
-      <span style="font-size: 13px; color: #9ca3af">
-        YOLO index · SAM3-ready backend
-      </span>
+      <h1><span>Nightshift</span> Search MVP</h1>
+      <small>YOLO index · SAM3 natural-language search</small>
     </header>
 
     <main>
@@ -288,13 +459,13 @@
           <button type="submit">Upload &amp; process</button>
         </form>
         <div class="empty-msg" style="margin-top: 6px">
-          Use a short MP4 first to keep processing fast.
+          Start with a short MP4 to keep processing snappy.
         </div>
       </div>
 
       <!-- 2. YOLO search -->
-      <h2>2. Search detections</h2>
-      <div class="card">
+      <h2>2. Search detections (YOLO)</h2>
+      <div class="card card--sub">
         <form action="/" method="get" class="form-row">
           <input
             type="text"
@@ -302,7 +473,9 @@
             placeholder="Try: person, car, truck, motorcycle"
             value="{{ label or '' }}"
           />
-          <span style="font-size: 12px; color: #9ca3af">Min confidence</span>
+          <span style="font-size: 12px; color: var(--text-soft)"
+            >Min confidence</span
+          >
           <input
             type="number"
             name="min_conf"
@@ -317,7 +490,7 @@
 
         <div class="empty-msg" style="margin-top: 8px">
           {% if label %} Label: <strong>{{ label }}</strong> · {% endif %} Min
-          conf:
+          conf
           <strong
             >{{ '%.2f'|format(min_conf if min_conf is not none else 0.30) }}</strong
           >
@@ -325,55 +498,60 @@
       </div>
 
       <!-- 3. SMART SEARCH controls -->
-      <div style="margin-top: 40px">
-        <h2>3. SMART SEARCH (SAM3 Natural Language)</h2>
+      <div style="margin-top: 32px">
+        <h2>3. Smart search (SAM3 · natural language)</h2>
 
-        <div class="form-row">
-          <label>Description:</label>
-          <input
-            id="smart_query"
-            type="text"
-            style="width: 260px"
-            placeholder="e.g. yellow car; bus; truck"
-          />
+        <div class="card card--sub" style="margin-top: 8px">
+          <div class="form-row">
+            <label>Description:</label>
+            <input
+              id="smart_query"
+              type="text"
+              style="width: 260px"
+              placeholder="e.g. yellow car; bus; black car"
+            />
 
-          <label>Video:</label>
-          <select id="smart_video">
-            {% if video_paths %}
-              {% for v in video_paths %}
-                <option
-                  value="{{ v }}"
-                  {% if current_video and v == current_video %}selected{% endif %}
-                >
-                  {{ v.rsplit('/', 1)[-1] }}
-                </option>
-              {% endfor %}
-            {% else %}
-              <option value="">(no videos indexed yet)</option>
-            {% endif %}
-          </select>
+            <label>Video:</label>
+            <select id="smart_video">
+              {% if video_paths %}
+                {% for v in video_paths %}
+                  <option
+                    value="{{ v }}"
+                    {% if current_video and v == current_video %}selected{% endif %}
+                  >
+                    {{ v.rsplit('/', 1)[-1] }}
+                  </option>
+                {% endfor %}
+              {% else %}
+                <option value="">(no videos indexed yet)</option>
+              {% endif %}
+            </select>
 
-          <label>Frames to scan:</label>
-          <input
-            id="smart_frames"
-            type="number"
-            value="5"
-            min="1"
-            max="200"
-            style="width: 80px"
-          />
-          <label>Min confidence:</label>
-          <input
-            id="smart_conf"
-            type="number"
-            step="0.05"
-            value="0.3"
-            style="width: 80px"
-          />
+            <label>Frames to scan:</label>
+            <input
+              id="smart_frames"
+              type="number"
+              value="5"
+              min="1"
+              max="200"
+              style="width: 80px"
+            />
+            <label>Min confidence:</label>
+            <input
+              id="smart_conf"
+              type="number"
+              step="0.05"
+              value="0.3"
+              style="width: 80px"
+            />
 
-          <button onclick="runSmartSearch()" style="margin-left: 10px">
-            Smart Search
-          </button>
+            <button onclick="runSmartSearch()" style="margin-left: 10px">
+              Smart search
+            </button>
+          </div>
+          <div class="footer-hint">
+            SAM3 will rescan frames on demand based on your description.
+          </div>
         </div>
       </div>
 
@@ -381,9 +559,14 @@
       <div class="layout">
         <!-- Video viewer -->
         <div class="video-wrapper">
-          <h3 style="margin: 0 0 8px; font-size: 14px; color: #9ca3af">
-            Video viewer
-          </h3>
+          <div class="video-header">
+            <h3 style="margin: 0; font-size: 14px; color: var(--text-muted)">
+              Video viewer
+            </h3>
+            {% if current_video %}
+            <span>{{ current_video.rsplit('/', 1)[-1] }}</span>
+            {% endif %}
+          </div>
           {% if video_src %}
           <div class="video-stack">
             <video id="player" controls src="{{ video_src }}"></video>
@@ -394,8 +577,8 @@
             />
           </div>
           <div class="video-caption">
-            Click any detection on the right to seek the video and show its YOLO
-            bounding boxes overlaid here.
+            Click any YOLO detection on the right to seek the video and overlay
+            bounding boxes here.
           </div>
           {% else %}
           <div class="empty-msg">
@@ -407,10 +590,8 @@
         <!-- YOLO timeline -->
         <div class="timeline">
           <div class="timeline-header">
-            <span style="font-size: 13px; color: #9ca3af">
-              Timeline of detections (YOLO)
-            </span>
-            <span style="font-size: 12px; color: #6b7280">
+            <span>Timeline of detections</span>
+            <span>
               {% if label %}label=<code>{{ label }}</code> · {% endif %}
               min_conf={{ '%.2f'|format(min_conf if min_conf is not none else
               0.30) }} {% if results %} · {{ results|length }} hits{% endif %}
@@ -451,15 +632,16 @@
         </div>
       </div>
 
-      <!-- SAM3 big gallery (separate from video) -->
+      <!-- SAM3 big gallery -->
       <div class="sam3-card">
         <div class="sam3-header">
           <span>SAM3 images for current query</span>
-          <span id="smart_status" style="font-size: 12px; color: #6b7280">
+          <span id="smart_status" style="font-size: 12px; color: var(--text-soft)">
             Not run yet.
           </span>
         </div>
 
+        <!-- prompt filter chips -->
         <div
           id="sam3-prompt-filters"
           style="display: flex; gap: 8px; margin-bottom: 10px"
@@ -467,13 +649,27 @@
 
         <div id="sam3-gallery" class="sam3-grid"></div>
 
-        <div style="margin-top: 8px; display: flex; gap: 8px">
-          <button id="sam3-report-btn" type="button">
-            Download PDF report
-          </button>
+        <div style="margin-top: 10px; display: flex; gap: 8px">
+          <button id="sam3-report-btn" type="button">Download PDF report</button>
+          <span class="footer-hint">
+            PDF is capped to a limited number of frames so it doesn’t melt your
+            laptop.
+          </span>
         </div>
       </div>
     </main>
+
+    <!-- Lightbox overlay -->
+    <div id="sam3-lightbox" class="lightbox">
+      <div class="lightbox-backdrop" onclick="closeLightbox()"></div>
+      <div class="lightbox-content">
+        <button class="lightbox-close" onclick="closeLightbox()">Close ✕</button>
+        <button class="lightbox-nav lightbox-prev" onclick="prevLightbox()">‹</button>
+        <button class="lightbox-nav lightbox-next" onclick="nextLightbox()">›</button>
+        <img id="lightbox-img" src="" alt="SAM3 large view" />
+        <div class="lightbox-caption" id="lightbox-caption"></div>
+      </div>
+    </div>
 
     <!-- YOLO timeline behaviour -->
     <script>
@@ -483,13 +679,6 @@
 
       function clearActive() {
         items.forEach((i) => i.classList.remove("active"));
-      }
-
-      function seekToTimestamp(sec) {
-        if (!video) return;
-        video.currentTime = sec;
-        video.pause();
-        window.scrollTo({ top: video.offsetTop - 20, behavior: "smooth" });
       }
 
       items.forEach((item) => {
@@ -523,22 +712,32 @@
       }
     </script>
 
-    <!-- SAM3 smart search + gallery + filters + PDF download -->
+    <!-- SAM3 smart search + gallery + filters + lightbox hooks -->
     <script>
       let sam3CurrentQuery = "";
       const sam3Colors = [
-        "#ff00ff",
-        "#00ffff",
-        "#ff8800",
-        "#00ff00",
-        "#0055ff",
-        "#ffff00",
+        "#e75300",
+        "#f97316",
+        "#22c55e",
+        "#0ea5e9",
+        "#a855f7",
+        "#facc15",
       ];
       let lastSAM3Results = [];
+      let lightboxResults = [];
+      let lightboxIndex = 0;
+
+      function seekToTimestamp(sec) {
+        if (!video) return;
+        video.currentTime = sec;
+        video.pause();
+        window.scrollTo({ top: video.offsetTop - 20, behavior: "smooth" });
+      }
 
       function renderPromptFilters(prompts) {
         const container = document.getElementById("sam3-prompt-filters");
         container.innerHTML = "";
+
         if (!prompts || !prompts.length) return;
 
         prompts.forEach((p, i) => {
@@ -577,6 +776,7 @@
         statusEl.textContent = "Running SAM3 search...";
         gallery.innerHTML = "";
         lastSAM3Results = [];
+        lightboxResults = [];
 
         try {
           const resp = await fetch("/smart-search", {
@@ -600,7 +800,6 @@
           renderPromptFilters(data.prompts || []);
           renderSAM3Gallery(lastSAM3Results);
 
-          // Wire PDF download
           reportBtn.onclick = () => {
             const vpath =
               data.video ||
@@ -613,9 +812,9 @@
             const url =
               `/sam3-report-pdf?query=${encodeURIComponent(query)}` +
               `&video=${encodeURIComponent(vpath)}` +
-              `&min_score=${encodeURIComponent(min_score)}`;
-            // direct navigation → browser downloads PDF
-            window.location = url;
+              `&min_score=${encodeURIComponent(min_score)}` +
+              `&max_frames=${encodeURIComponent(max_frames)}`;
+            window.open(url, "_blank");
           };
         } catch (err) {
           console.error("Smart search error:", err);
@@ -649,7 +848,9 @@
           return;
         }
 
-        filtered.forEach((r) => {
+        lightboxResults = filtered.slice(); // keep same ordering for lightbox
+
+        filtered.forEach((r, i) => {
           const item = document.createElement("div");
           item.className = "sam3-item";
 
@@ -672,10 +873,49 @@
 
           item.onclick = () => {
             seekToTimestamp(r.timestamp);
+            openLightbox(i);
           };
 
           gallery.appendChild(item);
         });
+      }
+
+      function openLightbox(index) {
+        if (!lightboxResults.length) return;
+
+        // wrap index
+        lightboxIndex =
+          ((index % lightboxResults.length) + lightboxResults.length) %
+          lightboxResults.length;
+
+        const r = lightboxResults[lightboxIndex];
+        const img = document.getElementById("lightbox-img");
+        const cap = document.getElementById("lightbox-caption");
+        const lb = document.getElementById("sam3-lightbox");
+
+        const annotatedUrl =
+          `/annotated_sam3/${r.frame_id}` +
+          `?query=${encodeURIComponent(sam3CurrentQuery)}` +
+          `&min_score=${encodeURIComponent(r.score.toFixed(2))}`;
+
+        img.src = annotatedUrl;
+        cap.innerHTML =
+          `t = ${r.timestamp.toFixed(2)}s · score = ${r.score.toFixed(2)} ` +
+          `<span>(${r.prompt || sam3CurrentQuery})</span>`;
+
+        lb.classList.add("show");
+      }
+
+      function closeLightbox() {
+        document.getElementById("sam3-lightbox").classList.remove("show");
+      }
+      function nextLightbox() {
+        if (!lightboxResults.length) return;
+        openLightbox(lightboxIndex + 1);
+      }
+      function prevLightbox() {
+        if (!lightboxResults.length) return;
+        openLightbox(lightboxIndex - 1);
       }
     </script>
   </body>

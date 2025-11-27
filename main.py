@@ -22,6 +22,9 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
 
+# --- Safety cap for crash-prevention ---
+MAX_PDF_FRAMES_HARD = 20
+
 # ---------- SAM3 helper config ----------
 
 # Nice distinct BGR colors for different prompts (SAM3)
@@ -488,6 +491,9 @@ def sam3_report_pdf(
 
     Each page = one frame with at least one SAM3 hit,
     annotated with filled masks (same semantics as /annotated_sam3).
+
+    Extra: per-frame object counter, e.g.
+      "Objects in frame: 7 (yellow car: 4, bus: 3)"
     """
     frames = (
         db.query(Frame)
@@ -516,6 +522,10 @@ def sam3_report_pdf(
         any_hit = False
         hit_prompts: set[str] = set()
 
+        # NEW: counters for this frame
+        frame_total = 0
+        counts_by_prompt: dict[str, int] = {}
+
         for idx, prompt in enumerate(prompts):
             color = SAM3_COLORS[idx % len(SAM3_COLORS)]  # BGR
             sam_dets = run_sam3_on_path(str(img_path), prompt)
@@ -527,6 +537,10 @@ def sam3_report_pdf(
 
                 any_hit = True
                 hit_prompts.add(prompt)
+
+                # increment counters
+                frame_total += 1
+                counts_by_prompt[prompt] = counts_by_prompt.get(prompt, 0) + 1
 
                 x, y, w, h = det["bbox"]
                 x = int(x)
@@ -555,6 +569,7 @@ def sam3_report_pdf(
         img_bytes = img_buf.tobytes()
         img_reader = ImageReader(BytesIO(img_bytes))
 
+        # --- header text ---
         c.setFont("Helvetica-Bold", 14)
         c.drawString(
             margin,
@@ -579,8 +594,23 @@ def sam3_report_pdf(
                 "Prompts hit: " + ", ".join(sorted(hit_prompts)),
             )
 
+        # NEW: object counter line
+        if frame_total > 0:
+            counts_str = ", ".join(
+                f"{p}: {counts_by_prompt[p]}" for p in sorted(counts_by_prompt)
+            )
+            c.drawString(
+                margin,
+                page_h - margin - 58,
+                f"Objects in frame: {frame_total} ({counts_str})",
+            )
+            header_height = 80
+        else:
+            header_height = 60
+
+        # --- image placement ---
         max_img_w = page_w - 2 * margin
-        max_img_h = page_h - 2 * margin - 60
+        max_img_h = page_h - 2 * margin - header_height
 
         img_w, img_h = img_reader.getSize()
         scale = min(max_img_w / img_w, max_img_h / img_h, 1.0)
@@ -612,4 +642,8 @@ def sam3_report_pdf(
     headers = {
         "Content-Disposition": f'attachment; filename="{filename}"'
     }
-    return Response(content=buf.getvalue(), media_type="application/pdf", headers=headers)
+    return Response(
+        content=buf.getvalue(),
+        media_type="application/pdf",
+        headers=headers,
+    )
